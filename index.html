@@ -254,6 +254,10 @@ function replayLotusAnswer() {
   if (answer && !lotusRecognition && !lotusConversationRequest) speakVoice(answer);
 }
 function testLotusSpeaker() {
+  if (document.hidden) {
+    voiceStatus('Affichez la page Lotus avant de tester le son.');
+    return;
+  }
   if (lotusRecognition || lotusConversationRequest || lotusUtterance) {
     voiceStatus('Arrêtez la session en cours avant le test du son.');
     return;
@@ -292,7 +296,10 @@ function speakVoice(sample){
       voiceStatus(message);
     };
     utterance.onend = () => finish('Lecture terminée.');
-    utterance.onerror = () => finish('La lecture vocale a échoué. Vérifiez le son et les voix de votre appareil.');
+    utterance.onerror = event => {
+      const detail = event?.error ? ' (code : ' + event.error + ')' : '';
+      finish('La lecture vocale a échoué' + detail + '. Vérifiez le son et les voix de votre appareil.');
+    };
     lotusSpeechTimer = setTimeout(() => {
       if (lotusUtterance !== utterance) return;
       stopSpeaking();
