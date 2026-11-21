@@ -159,7 +159,7 @@ function talkToLotus() {
   }
   voiceStatus('Demande de conversation reçue sur une page visible.');
   if (!lotusConversationEndpoint) {
-    voiceStatus('Le service de conversation Lotus reste à connecter.');
+    testLotusMicrophone();
     return;
   }
   if (lotusRecognition || lotusConversationRequest) return;
@@ -257,7 +257,7 @@ function testLotusMicrophone() {
     return;
   }
   voiceStatus('Test du micro demandé.');
-  startVoice(() => voiceStatus('Parole transcrite par le navigateur. Aucun texte envoyé à Lotus IA.'));
+  startVoice(() => voiceStatus('Parole transcrite par le navigateur. Aucun texte envoyé à Lotus IA. Le service de conversation reste à connecter.'));
 }
 function replayLotusAnswer() {
   const answer = $('lotusAnswer').textContent;
