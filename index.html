@@ -143,6 +143,11 @@ function toggleLotusTalk() {
   else talkToLotus();
 }
 function talkToLotus() {
+  if (document.hidden) {
+    voiceStatus('Demande de conversation reçue sur une page masquée. Revenez sur Lotus pour parler.');
+    return;
+  }
+  voiceStatus('Demande de conversation reçue sur une page visible.');
   if (!lotusConversationEndpoint) {
     voiceStatus('Le service de conversation Lotus reste à connecter.');
     return;
