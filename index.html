@@ -34,9 +34,13 @@
 <select id="lotusVoiceLocale"><option value="fr-BE">Belgique</option><option value="fr-FR" selected>France</option></select>
 <label for="lotusVoiceChoice">Voix disponibles pour cette langue</label>
 <select id="lotusVoiceChoice"><option value="">Voix par défaut</option></select>
+<label for="lotusVoiceStyle">Style de lecture</label>
+<select id="lotusVoiceStyle"><option value="soft">Doux et posé</option><option value="standard">Naturel</option></select>
+<p>Les voix sont fournies par l’appareil. Si aucune voix belge n’est proposée, vous pouvez essayer une autre voix française dans la liste.</p>
 </details>
 <details><summary>Diagnostic vocal</summary>
 <button class="action" type="button" onclick="testLotusSpeaker()">Tester le son sans micro</button>
+<button class="action" type="button" onclick="testLotusMicrophone()">Tester la reconnaissance sans Lotus IA</button>
 <ol id="voiceDiagnostics"></ol></details>
 <button class="action" onclick="cancelLotusTalk();window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="access" data-tool hidden><h2>♿ Accessibilité</h2><p>Réglez votre confort de lecture.</p><button class="action" onclick="setSize()">Agrandir / réduire le texte</button><button class="action" onclick="setContrast()">Contraste renforcé</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="support" data-tool hidden><h2>💬 Accompagnement</h2><label for="supportNeed">Quel est votre besoin ?</label><textarea id="supportNeed" data-save placeholder="Décrivez votre besoin"></textarea><button class="action" onclick="saveField('supportNeed')">Enregistrer</button><p class="note">Cet espace est un carnet personnel, pas une conversation avec une IA.</p><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="plans" data-tool hidden><h2>💳 Abonnements</h2><p>Formule validée, en préparation : trois mois d’essai gratuit, puis 99 € en paiement unique à vie par famille élargie, jusqu’à 100 membres avec des comptes privés distincts et accès à toutes les applications. Les comptes familiaux, paiements et droits d’accès ne sont pas activés dans cette version.</p><p class="note">Aucun paiement n’est collecté ici, aucun achat ni renouvellement automatique à la fin de l’essai. Aucun supplément ni dépassement facturé automatiquement. Les services externes doivent disposer d’une enveloppe familiale partagée dont le montant et les limites restent à définir ; les fonctions locales restent accessibles lorsque cette enveloppe est épuisée, dans les limites techniques de l’appareil.</p><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><div class="separator"></div><h2>💙 LOTUS Création et reconnaissance</h2><section class="panel" id="lotus_creative" data-tool hidden><h2>🎨 Création de cartes</h2><p>Rédigez votre carte ou invitation, puis exportez-la en fichier texte.</p><label for="lotus_card">Texte de votre création</label><textarea id="lotus_card" data-save placeholder="Joyeux anniversaire…"></textarea><button class="action" onclick="saveField('lotus_card')">Enregistrer</button><button class="action" onclick="lotusDownloadText('lotus_card','carte-lotus.txt')">Exporter la carte</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="lotus_objects" data-tool hidden><h2>📷 Reconnaissance d’objets — carnet photo</h2><p>Ajoutez une photo et décrivez l’objet. La reconnaissance automatique par IA n’est pas connectée.</p><label for="lotus_object_photo">Photo de l’objet</label><input type="file" id="lotus_object_photo" accept="image/*" onchange="lotusPreview(this,'lotus_object_view')"><img id="lotus_object_view" alt="Aperçu de l’objet" hidden style="max-width:100%;max-height:260px;border-radius:12px"><label for="lotus_object_notes">Description personnelle</label><textarea id="lotus_object_notes" data-save></textarea><button class="action" onclick="saveField('lotus_object_notes')">Enregistrer la description</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="lotus_progress" data-tool hidden><h2>⭐ Mes progrès</h2><p>Notez vos objectifs et vos réalisations.</p><label for="lotus_progress_notes">Objectifs et réalisations</label><textarea id="lotus_progress_notes" data-save placeholder="Ce que j’ai accompli…"></textarea><button class="action" onclick="saveField('lotus_progress_notes')">Enregistrer</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section></main><footer>© 2026 Famille LOTUS — Tous droits réservés. <span class="note">Version de démonstration autonome ; données locales à cet appareil.</span></footer><script>
 const $=id=>document.getElementById(id);const key=location.pathname.replace(/[^a-z0-9]/gi,'_');
@@ -201,7 +205,9 @@ function startVoice(onTranscript){
 function stopSpeaking(){clearTimeout(lotusSpeechTimer);lotusSpeechTimer=null;const u=lotusUtterance;lotusUtterance=null;if(u)u.onstart=u.onend=u.onerror=null;if('speechSynthesis'in window)window.speechSynthesis.cancel()}
 function lotusAvailableVoices(locale) {
   const voices = window.speechSynthesis?.getVoices?.() || [];
-  return voices.filter(voice => voice.lang.replace('_', '-').toLowerCase() === locale.toLowerCase());
+  const french = voices.filter(voice => /^fr(?:[-_]|$)/i.test(voice.lang));
+  const exact = french.filter(voice => voice.lang.replace('_', '-').toLowerCase() === locale.toLowerCase());
+  return exact.length ? exact : french;
 }
 function refreshLotusVoiceOptions() {
   const locale = $('lotusVoiceLocale');
@@ -216,7 +222,7 @@ function refreshLotusVoiceOptions() {
   for (const voice of lotusAvailableVoices(locale.value)) {
     const option = document.createElement('option');
     option.value = voice.voiceURI;
-    option.textContent = voice.name;
+    option.textContent = voice.name + ' (' + voice.lang + ')';
     select.appendChild(option);
   }
   if ([...select.options].some(option => option.value === selected)) select.value = selected;
@@ -226,6 +232,14 @@ window.addEventListener('DOMContentLoaded', () => {
   window.speechSynthesis?.addEventListener?.('voiceschanged', refreshLotusVoiceOptions);
   refreshLotusVoiceOptions();
 });
+function testLotusMicrophone() {
+  if (document.hidden || lotusRecognition || lotusConversationRequest || lotusUtterance) {
+    voiceStatus('Le test du micro nécessite une page visible et aucune session en cours.');
+    return;
+  }
+  voiceStatus('Test du micro demandé.');
+  startVoice(() => voiceStatus('Parole transcrite par le navigateur. Aucun texte envoyé à Lotus IA.'));
+}
 function testLotusSpeaker() {
   if (lotusRecognition || lotusConversationRequest || lotusUtterance) {
     voiceStatus('Arrêtez la session en cours avant le test du son.');
@@ -242,7 +256,14 @@ function speakVoice(sample){
     lotusUtterance = utterance;
     utterance.lang = $('lotusVoiceLocale')?.value || 'fr-FR';
     const voice = lotusAvailableVoices(utterance.lang).find(candidate => candidate.voiceURI === $('lotusVoiceChoice')?.value);
-    if (voice) utterance.voice = voice;
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang.replace('_', '-');
+    }
+    if ($('lotusVoiceStyle')?.value === 'soft') {
+      utterance.rate = 0.88;
+      utterance.pitch = 1.03;
+    }
     utterance.onstart = () => {
       if (lotusUtterance !== utterance) return;
       clearTimeout(lotusSpeechTimer);
