@@ -29,9 +29,10 @@
 <button id="lotusTalk" class="action" type="button" onclick="toggleLotusTalk()">Parler à Lotus</button>
 <p id="voiceStatus" role="status" aria-live="polite">Prêt à écouter.</p>
 <p id="lotusAnswer" aria-live="polite"></p>
+<button id="lotusReplay" type="button" hidden onclick="replayLotusAnswer()">Écouter la réponse</button>
 <details><summary>Préférence de voix</summary>
-<label for="lotusVoiceLocale">Français de Belgique ou de France</label>
-<select id="lotusVoiceLocale"><option value="fr-BE">Belgique</option><option value="fr-FR" selected>France</option></select>
+<label for="lotusVoiceLocale">Langue ou région de la voix</label>
+<select id="lotusVoiceLocale"><option value="fr-BE">Belgique</option><option value="fr-FR" selected>France</option><option value="all">Toutes les langues</option></select>
 <label for="lotusVoiceChoice">Voix disponibles pour cette langue</label>
 <select id="lotusVoiceChoice"><option value="">Voix par défaut</option></select>
 <label for="lotusVoiceStyle">Style de lecture</label>
@@ -148,6 +149,7 @@ function talkToLotus() {
   }
   if (lotusRecognition || lotusConversationRequest) return;
   $('lotusAnswer').textContent = '';
+  $('lotusReplay').hidden = true;
   startVoice(transcript => {
     const question = transcript.trim().replace(/^lotus(?=$|[\s,.:;!?…])[\s,.:;!?…]*/iu, '').trim();
     if (!question) {
@@ -174,6 +176,7 @@ async function sendLotusQuestion(question) {
     if (lotusConversationRequest !== request) return;
     if (typeof result.answer !== 'string' || !result.answer.trim()) throw new Error('Réponse vide');
     $('lotusAnswer').textContent = result.answer;
+    $('lotusReplay').hidden = false;
     speakVoice(result.answer);
   } catch (error) {
     if (lotusConversationRequest === request) voiceStatus('Lotus n’a pas pu répondre. Vous pouvez réessayer.');
@@ -205,6 +208,7 @@ function startVoice(onTranscript){
 function stopSpeaking(){clearTimeout(lotusSpeechTimer);lotusSpeechTimer=null;const u=lotusUtterance;lotusUtterance=null;if(u)u.onstart=u.onend=u.onerror=null;if('speechSynthesis'in window)window.speechSynthesis.cancel()}
 function lotusAvailableVoices(locale) {
   const voices = window.speechSynthesis?.getVoices?.() || [];
+  if (locale === 'all') return voices;
   const french = voices.filter(voice => /^fr(?:[-_]|$)/i.test(voice.lang));
   const exact = french.filter(voice => voice.lang.replace('_', '-').toLowerCase() === locale.toLowerCase());
   return exact.length ? exact : french;
@@ -240,6 +244,10 @@ function testLotusMicrophone() {
   voiceStatus('Test du micro demandé.');
   startVoice(() => voiceStatus('Parole transcrite par le navigateur. Aucun texte envoyé à Lotus IA.'));
 }
+function replayLotusAnswer() {
+  const answer = $('lotusAnswer').textContent;
+  if (answer && !lotusRecognition && !lotusConversationRequest) speakVoice(answer);
+}
 function testLotusSpeaker() {
   if (lotusRecognition || lotusConversationRequest || lotusUtterance) {
     voiceStatus('Arrêtez la session en cours avant le test du son.');
@@ -254,8 +262,9 @@ function speakVoice(sample){
   try {
     const utterance = new SpeechSynthesisUtterance(text);
     lotusUtterance = utterance;
-    utterance.lang = $('lotusVoiceLocale')?.value || 'fr-FR';
-    const voice = lotusAvailableVoices(utterance.lang).find(candidate => candidate.voiceURI === $('lotusVoiceChoice')?.value);
+    const locale = $('lotusVoiceLocale')?.value || 'fr-FR';
+    utterance.lang = locale === 'all' ? 'fr-FR' : locale;
+    const voice = lotusAvailableVoices(locale).find(candidate => candidate.voiceURI === $('lotusVoiceChoice')?.value);
     if (voice) {
       utterance.voice = voice;
       utterance.lang = voice.lang.replace('_', '-');
