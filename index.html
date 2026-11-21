@@ -136,7 +136,7 @@ async function sendLotusQuestion(question) {
     const response = await fetch(lotusConversationEndpoint, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({question}),
+      body: JSON.stringify({message: question}),
       signal: request.signal
     });
     if (!response.ok) throw new Error('Service indisponible');
