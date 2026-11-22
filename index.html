@@ -168,7 +168,7 @@ function showLotusVoiceReport() {
 }
 function stopVoice(message='Dictée arrêtée.'){const r=lotusRecognition;lotusRecognition=null;clearTimeout(lotusVoiceTimer);lotusVoiceTimer=null;if(r){r.onstart=r.onaudiostart=r.onresult=r.onerror=r.onend=null;try{r.abort()}catch(e){}}voiceStatus(message)}
 // Renseigner uniquement après validation du service IA et de son contrat.
-const lotusConversationEndpoint = '';
+const lotusConversationEndpoint = 'https://lotus-ia.dethierhelene.workers.dev/chat';
 let lotusConversationRequest = null;
 function cancelLotusTalk() {
   lotusConversationRequest?.abort();
