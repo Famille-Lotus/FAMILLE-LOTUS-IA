@@ -49,7 +49,9 @@ body:not(.contrast) header {background:#f8f1e4;color:#304257;}
 <label for="lotusVoiceLocale">Langue ou région de la voix</label>
 <select id="lotusVoiceLocale"><option value="fr-BE">Belgique</option><option value="fr-FR" selected>France</option><option value="all">Toutes les langues</option></select>
 <label for="lotusVoiceChoice">Voix disponibles pour cette langue</label>
-<select id="lotusVoiceChoice"><option value="">Voix par défaut</option></select>
+<select id="lotusVoiceChoice" aria-describedby="lotusVoiceAvailability"><option value="">Voix par défaut</option></select>
+<button class="action" type="button" onclick="refreshLotusVoiceOptions()">Actualiser les voix</button>
+<p id="lotusVoiceAvailability" role="status"></p>
 <label for="lotusVoiceStyle">Style de lecture</label>
 <select id="lotusVoiceStyle"><option value="soft">Doux et posé</option><option value="standard">Naturel</option></select>
 <p>Les voix sont fournies par l’appareil. Si aucune voix belge n’est proposée, vous pouvez essayer une autre voix française dans la liste.</p>
@@ -60,7 +62,16 @@ body:not(.contrast) header {background:#f8f1e4;color:#304257;}
 <p id="lotusAudioOutputStatus" role="status"></p>
 <audio id="lotusTestTone" preload="none" hidden src="data:audio/wav;base64,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"></audio>
 <button class="action" type="button" onclick="testLotusMicrophone()">Tester la reconnaissance sans Lotus IA</button>
-<ol id="voiceDiagnostics"></ol></details>
+<button class="action" type="button" onclick="testLotusCommand()">Tester la commande « Lotus »</button>
+<p>Dites « Lotus » après avoir lancé ce test. Le résultat indique si la dictée du navigateur a reconnu la commande. Rien n’est envoyé au serveur Lotus IA.</p>
+<ol id="voiceDiagnostics"></ol>
+<button class="action" type="button" onclick="showLotusVoiceReport()">Afficher le rapport à copier</button>
+<div id="lotusVoiceReportPanel" hidden>
+  <label for="lotusVoiceReport">Rapport du dernier essai vocal</label>
+  <textarea id="lotusVoiceReport" rows="9" readonly></textarea>
+  <p>Copiez ce rapport si vous souhaitez le partager. Indiquez aussi si vous avez entendu le bip et la voix.</p>
+</div>
+</details>
 <button class="action" onclick="cancelLotusTalk();window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="access" data-tool hidden><h2>♿ Accessibilité</h2><p>Réglez votre confort de lecture.</p><button class="action" onclick="setSize()">Agrandir / réduire le texte</button><button class="action" onclick="setContrast()">Contraste renforcé</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="support" data-tool hidden><h2>💬 Accompagnement</h2><label for="supportNeed">Quel est votre besoin ?</label><textarea id="supportNeed" data-save placeholder="Décrivez votre besoin"></textarea><button class="action" onclick="saveField('supportNeed')">Enregistrer</button><p class="note">Cet espace est un carnet personnel, pas une conversation avec une IA.</p><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="plans" data-tool hidden><h2>💳 Abonnements</h2><p>Formule validée, en préparation : trois mois d’essai gratuit, puis 99 € en paiement unique à vie par famille élargie, jusqu’à 100 membres avec des comptes privés distincts et accès à toutes les applications. Les comptes familiaux, paiements et droits d’accès ne sont pas activés dans cette version.</p><p class="note">Aucun paiement n’est collecté ici, aucun achat ni renouvellement automatique à la fin de l’essai. Aucun supplément ni dépassement facturé automatiquement. Les services externes doivent disposer d’une enveloppe familiale partagée dont le montant et les limites restent à définir ; les fonctions locales restent accessibles lorsque cette enveloppe est épuisée, dans les limites techniques de l’appareil.</p><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><div class="separator"></div><h2>💙 LOTUS Création et reconnaissance</h2><section class="panel" id="lotus_creative" data-tool hidden><h2>🎨 Création de cartes</h2><p>Rédigez votre carte ou invitation, puis exportez-la en fichier texte.</p><label for="lotus_card">Texte de votre création</label><textarea id="lotus_card" data-save placeholder="Joyeux anniversaire…"></textarea><button class="action" onclick="saveField('lotus_card')">Enregistrer</button><button class="action" onclick="lotusDownloadText('lotus_card','carte-lotus.txt')">Exporter la carte</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="lotus_objects" data-tool hidden><h2>📷 Reconnaissance d’objets — carnet photo</h2><p>Ajoutez une photo et décrivez l’objet. La reconnaissance automatique par IA n’est pas connectée.</p><label for="lotus_object_photo">Photo de l’objet</label><input type="file" id="lotus_object_photo" accept="image/*" onchange="lotusPreview(this,'lotus_object_view')"><img id="lotus_object_view" alt="Aperçu de l’objet" hidden style="max-width:100%;max-height:260px;border-radius:12px"><label for="lotus_object_notes">Description personnelle</label><textarea id="lotus_object_notes" data-save></textarea><button class="action" onclick="saveField('lotus_object_notes')">Enregistrer la description</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section><section class="panel" id="lotus_progress" data-tool hidden><h2>⭐ Mes progrès</h2><p>Notez vos objectifs et vos réalisations.</p><label for="lotus_progress_notes">Objectifs et réalisations</label><textarea id="lotus_progress_notes" data-save placeholder="Ce que j’ai accompli…"></textarea><button class="action" onclick="saveField('lotus_progress_notes')">Enregistrer</button><button class="action" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Retour aux rubriques</button></section></main><footer>© 2026 Famille LOTUS — Tous droits réservés. <span class="note">Version de démonstration autonome ; données locales à cet appareil.</span></footer><script>
 const $=id=>document.getElementById(id);const key=location.pathname.replace(/[^a-z0-9]/gi,'_');
 function openPanel(id){if(id!=='voice')cancelLotusTalk();document.querySelectorAll('section[data-tool]').forEach(el=>el.hidden=el.id!==id);let el=$(id);if(el){el.hidden=false;el.scrollIntoView({behavior:'smooth',block:'start'});el.querySelector('h2')?.setAttribute('tabindex','-1');el.querySelector('h2')?.focus({preventScroll:true})}}
@@ -141,15 +152,33 @@ window.addEventListener('DOMContentLoaded',()=>{loadFields();document.querySelec
 // Une seule dictée active ; aucune relance automatique ni enregistrement automatique.
 let lotusRecognition=null,lotusVoiceTimer=null,lotusUtterance=null,lotusSpeechTimer=null;
 function voiceStatus(text){updateLotusTalkButton();$('voiceStatus').textContent=text;const list=$('voiceDiagnostics');if(list){const li=document.createElement('li');li.textContent=new Date().toLocaleTimeString('fr-BE')+' — '+text;list.appendChild(li);while(list.children.length>20)list.removeChild(list.firstChild)}}
-function stopVoice(message='Dictée arrêtée.'){const r=lotusRecognition;lotusRecognition=null;clearTimeout(lotusVoiceTimer);lotusVoiceTimer=null;if(r){r.onstart=r.onresult=r.onerror=r.onend=null;try{r.abort()}catch(e){}}voiceStatus(message)}
+function showLotusVoiceReport() {
+  const lines = Array.from($('voiceDiagnostics').children, entry => entry.textContent);
+  const bip = $('lotusAudioOutputStatus')?.textContent?.trim();
+  const report = $('lotusVoiceReport');
+  report.value = [
+    'LOTUS IA — Rapport de diagnostic vocal',
+    'Bip : ' + (bip || 'aucun résultat affiché.'),
+    'Étapes de la session :',
+    ...(lines.length ? lines : ['Aucune étape consignée.'])
+  ].join('\n');
+  $('lotusVoiceReportPanel').hidden = false;
+  report.focus();
+  report.select();
+}
+function stopVoice(message='Dictée arrêtée.'){const r=lotusRecognition;lotusRecognition=null;clearTimeout(lotusVoiceTimer);lotusVoiceTimer=null;if(r){r.onstart=r.onaudiostart=r.onresult=r.onerror=r.onend=null;try{r.abort()}catch(e){}}voiceStatus(message)}
 // Renseigner uniquement après validation du service IA et de son contrat.
 const lotusConversationEndpoint = '';
 let lotusConversationRequest = null;
 function cancelLotusTalk() {
   lotusConversationRequest?.abort();
   lotusConversationRequest = null;
+  stopLotusTestTone('Test du bip arrêté.');
+  const hadSpeech = Boolean(lotusUtterance);
   stopVoice('Conversation arrêtée.');
-  stopSpeaking();
+  if (!stopSpeaking() && hadSpeech) {
+    voiceStatus('La page a libéré les commandes, mais le navigateur n’a pas confirmé l’arrêt de la lecture.');
+  }
   updateLotusTalkButton();
 }
 function updateLotusTalkButton() {
@@ -159,6 +188,11 @@ function updateLotusTalkButton() {
 function toggleLotusTalk() {
   if (lotusRecognition || lotusConversationRequest || lotusUtterance) cancelLotusTalk();
   else talkToLotus();
+}
+function readLotusCommand(transcript) {
+  const text = transcript.trim();
+  const prefix = text.match(/^lotus(?=$|[\s,.:;!?…])[\s,.:;!?…]*/iu);
+  return {recognized: Boolean(prefix), question: prefix ? text.slice(prefix[0].length).trim() : text};
 }
 function talkToLotus() {
   if (document.hidden) {
@@ -174,7 +208,7 @@ function talkToLotus() {
   $('lotusAnswer').textContent = '';
   $('lotusReplay').hidden = true;
   startVoice(transcript => {
-    const question = transcript.trim().replace(/^lotus(?=$|[\s,.:;!?…])[\s,.:;!?…]*/iu, '').trim();
+    const {question} = readLotusCommand(transcript);
     if (!question) {
       voiceStatus('Dites « Lotus » suivi de votre question, ou posez directement votre question.');
       return;
@@ -204,7 +238,11 @@ function submitLotusWrittenQuestion() {
 async function sendLotusQuestion(question, readAloud = true) {
   const request = new AbortController();
   lotusConversationRequest = request;
-  const timer = setTimeout(() => request.abort(), 20000);
+  let failureMessage = 'Connexion au service Lotus interrompue. Vous pouvez réessayer.';
+  const timer = setTimeout(() => {
+    failureMessage = 'Le service Lotus met trop de temps à répondre. Vous pouvez réessayer.';
+    request.abort();
+  }, 20000);
   voiceStatus('Lotus prépare sa réponse…');
   try {
     const response = await fetch(lotusConversationEndpoint, {
@@ -213,16 +251,33 @@ async function sendLotusQuestion(question, readAloud = true) {
       body: JSON.stringify({message: question}),
       signal: request.signal
     });
-    if (!response.ok) throw new Error('Service indisponible');
+    if (!response.ok) {
+      const messages = {
+        401: 'Accès au service Lotus refusé. La configuration doit être vérifiée.',
+        403: 'Accès au service Lotus refusé. La configuration doit être vérifiée.',
+        429: 'Le service Lotus est temporairement limité. Réessayez plus tard.',
+        502: 'Le service IA est momentanément indisponible. Réessayez plus tard.',
+        503: 'Le service Lotus est indisponible ou sa configuration reste à terminer.',
+        504: 'Le service Lotus met trop de temps à répondre. Vous pouvez réessayer.'
+      };
+      failureMessage = messages[response.status] || 'Le service Lotus a refusé la demande. Vous pouvez réessayer.';
+      throw new Error('Service indisponible');
+    }
+    failureMessage = 'La réponse du service Lotus est illisible. Vous pouvez réessayer.';
     const result = await response.json();
     if (lotusConversationRequest !== request) return;
-    if (typeof result.answer !== 'string' || !result.answer.trim()) throw new Error('Réponse vide');
+    if (request.signal.aborted) {
+      voiceStatus('Le service Lotus met trop de temps à répondre. Vous pouvez réessayer.');
+      return;
+    }
+    failureMessage = 'Le service Lotus a renvoyé une réponse vide. Vous pouvez réessayer.';
+    if (typeof result?.answer !== 'string' || !result.answer.trim()) throw new Error('Réponse vide');
     $('lotusAnswer').textContent = result.answer;
     $('lotusReplay').hidden = false;
     if (readAloud) speakVoice(result.answer);
     else voiceStatus('Réponse de Lotus affichée.');
   } catch (error) {
-    if (lotusConversationRequest === request) voiceStatus('Lotus n’a pas pu répondre. Vous pouvez réessayer.');
+    if (lotusConversationRequest === request) voiceStatus(failureMessage);
   } finally {
     clearTimeout(timer);
     if (lotusConversationRequest === request) lotusConversationRequest = null;
@@ -231,42 +286,96 @@ async function sendLotusQuestion(question, readAloud = true) {
 }
 function startVoice(onTranscript){
   if(lotusRecognition)return;
+  if(document.hidden){voiceStatus('Affichez la page Lotus avant de démarrer la dictée.');return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){voiceStatus('La dictée n’est pas disponible dans ce navigateur. Vous pouvez saisir votre texte.');return}
   if(window.isSecureContext===false){voiceStatus('La dictée nécessite une page HTTPS.');return}
-  stopSpeaking();
+  stopLotusTestTone('Test du bip arrêté pour la dictée.');
+  if (!stopSpeaking()) {
+    voiceStatus('Impossible de préparer la dictée. Le navigateur n’a pas confirmé l’arrêt de la synthèse vocale. Vous pouvez réessayer.');
+    return;
+  }
+  voiceStatus('Demande de dictée en cours… Autorisez le microphone si Safari vous le demande.');
   let r;
+  let started = false;
+  let stage = "initialisation";
   try{
     r=new SR();lotusRecognition=r;r.lang='fr-FR';r.continuous=false;r.interimResults=false;
-    
-    voiceStatus('Demande de dictée en cours… Autorisez le microphone si Safari vous le demande.');
-    lotusVoiceTimer=setTimeout(()=>{if(lotusRecognition===r)stopVoice('Délai de dictée écoulé. Vous pouvez réessayer.');},30000);
-    r.onstart=()=>{if(lotusRecognition===r)voiceStatus('Dictée démarrée. Parlez, puis attendez la transcription.')};
+    updateLotusTalkButton();
+    lotusVoiceTimer = setTimeout(() => {
+      if (lotusRecognition !== r) return;
+      stopVoice(started
+        ? 'Délai de dictée écoulé sans transcription. Vous pouvez réessayer.'
+        : 'Le navigateur n’a pas signalé le démarrage de la dictée. Vérifiez l’autorisation du microphone.');
+    }, 30000);
+    r.onstart = () => {
+      if (lotusRecognition !== r) return;
+      started = true;
+      voiceStatus('Dictée démarrée. Parlez, puis attendez la transcription.');
+    };
+    r.onaudiostart = () => {
+      if (lotusRecognition === r) voiceStatus('Le navigateur signale le début de la capture audio. Parlez.');
+    };
     r.onresult=e=>{if(lotusRecognition!==r)return;const text=e.results?.[e.resultIndex||0]?.[0]?.transcript;if(typeof text==='string'&&text.trim()){if (onTranscript) { stopVoice('Question transcrite.'); onTranscript(text); } else { if ($('spokenText')) $('spokenText').value=text;stopVoice('Texte transcrit. Vous pouvez le relire avant de l’enregistrer.'); }}else stopVoice('Aucun texte reconnu. Vous pouvez réessayer.')};
     r.onerror=e=>{if(lotusRecognition!==r)return;const messages={'not-allowed':'Microphone ou dictée refusés. Vérifiez les autorisations Safari pour ce site.','service-not-allowed':'Le service de dictée du navigateur n’est pas autorisé.','audio-capture':'Aucune entrée microphone accessible. Vérifiez votre appareil.','no-speech':'Aucune parole reconnue. Vous pouvez réessayer.','network':'Le service de dictée est inaccessible. Vérifiez votre connexion.','aborted':'Dictée annulée.','language-not-supported':'La dictée en français n’est pas disponible sur ce navigateur.'};stopVoice(messages[e.error]||'La dictée a rencontré une erreur. Vous pouvez saisir votre texte.')};
     r.onend=()=>{if(lotusRecognition===r)stopVoice('Dictée terminée sans transcription. Vous pouvez réessayer.')};
+    stage = 'démarrage';
+    voiceStatus('Démarrage de la dictée demandé au navigateur. Autorisez le microphone si Safari vous le demande.');
     r.start();
-  }catch(e){stopVoice('Impossible de démarrer la dictée. Vous pouvez saisir votre texte.')}
+  } catch (error) {
+    const names = ['NotAllowedError', 'SecurityError', 'InvalidStateError', 'NotSupportedError'];
+    const code = names.includes(error?.name) ? ' (' + error.name + ')' : '';
+    stopVoice('Échec de la dictée à l’étape de ' + stage + code + '. Vous pouvez saisir votre texte.');
+  }
 }
-function stopSpeaking(){clearTimeout(lotusSpeechTimer);lotusSpeechTimer=null;const u=lotusUtterance;lotusUtterance=null;if(u)u.onstart=u.onend=u.onerror=null;if('speechSynthesis'in window)window.speechSynthesis.cancel()}
-function lotusAvailableVoices(locale) {
-  const voices = window.speechSynthesis?.getVoices?.() || [];
+function stopSpeaking() {
+  clearTimeout(lotusSpeechTimer);
+  lotusSpeechTimer = null;
+  const utterance = lotusUtterance;
+  lotusUtterance = null;
+  if (utterance) utterance.onstart = utterance.onend = utterance.onerror = null;
+  try {
+    window.speechSynthesis?.cancel();
+    return true;
+  } catch {
+    return false;
+  }
+}
+function lotusVoiceMatchesLocale(voice, locale) {
+  return voice.lang.replace('_', '-').toLowerCase() === locale.toLowerCase();
+}
+function lotusAvailableVoices(locale, voices = window.speechSynthesis?.getVoices?.() || []) {
   if (locale === 'all') return voices;
   const french = voices.filter(voice => /^fr(?:[-_]|$)/i.test(voice.lang));
-  const exact = french.filter(voice => voice.lang.replace('_', '-').toLowerCase() === locale.toLowerCase());
+  const exact = french.filter(voice => lotusVoiceMatchesLocale(voice, locale));
   return exact.length ? exact : french;
 }
 function refreshLotusVoiceOptions() {
   const locale = $('lotusVoiceLocale');
   const select = $('lotusVoiceChoice');
   if (!locale || !select) return;
+  const voices = window.speechSynthesis?.getVoices?.() || [];
+  const options = lotusAvailableVoices(locale.value, voices);
+  const availability = $('lotusVoiceAvailability');
+  if (availability) {
+    let message;
+    if (!window.speechSynthesis) message = 'La lecture vocale est indisponible dans ce navigateur.';
+    else if (!voices.length) message = 'Le navigateur ne communique encore aucune voix. Vous pouvez actualiser la liste ou essayer la voix par défaut.';
+    else if (!options.length) message = 'Le navigateur ne propose aucune voix française dans sa liste. Vous pouvez essayer la voix par défaut.';
+    else if (locale.value !== 'all' && !options.some(voice => lotusVoiceMatchesLocale(voice, locale.value))) {
+      message = 'Aucune voix ' + locale.value + ' dans la liste du navigateur. Vous pouvez choisir une autre voix française proposée.';
+    } else {
+      message = 'Choisissez une voix dans la liste, puis utilisez « Tester le son sans micro » pour l’écouter.';
+    }
+    if (availability.textContent !== message) availability.textContent = message;
+  }
   const selected = select.value;
   select.replaceChildren();
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
   defaultOption.textContent = 'Voix par défaut';
   select.appendChild(defaultOption);
-  for (const voice of lotusAvailableVoices(locale.value)) {
+  for (const voice of options) {
     const option = document.createElement('option');
     option.value = voice.voiceURI;
     option.textContent = voice.name + ' (' + voice.lang + ')';
@@ -287,24 +396,67 @@ function testLotusMicrophone() {
   voiceStatus('Test du micro demandé.');
   startVoice(() => voiceStatus('Parole transcrite par le navigateur. Aucun texte envoyé à Lotus IA. Le service de conversation reste à connecter.'));
 }
+function testLotusCommand() {
+  if (document.hidden || lotusRecognition || lotusConversationRequest || lotusUtterance) {
+    voiceStatus('Le test de la commande nécessite une page visible et aucune session en cours.');
+    return;
+  }
+  voiceStatus('Test de la commande « Lotus » demandé.');
+  startVoice(transcript => {
+    const {recognized, question} = readLotusCommand(transcript);
+    if (!recognized) {
+      voiceStatus('Dictée reçue. Dites « Lotus » au début de la phrase pour tester la commande.');
+      return;
+    }
+    const message = question ? 'Commande « Lotus » reconnue, suivie d’une question.' : 'Commande « Lotus » reconnue.';
+    voiceStatus(message + ' Aucun texte envoyé à Lotus IA.');
+  });
+}
 function replayLotusAnswer() {
   const answer = $('lotusAnswer').textContent;
   if (answer && !lotusRecognition && !lotusConversationRequest) speakVoice(answer);
 }
+let lotusToneAttempt = null;
+function stopLotusTestTone(message) {
+  const attempt = lotusToneAttempt;
+  lotusToneAttempt = null;
+  if (attempt) {
+    clearTimeout(attempt.timer);
+    if (message) $('lotusAudioOutputStatus').textContent = message;
+  }
+  $('lotusTestTone')?.pause();
+}
 async function testLotusAudioOutput() {
   const audio = $('lotusTestTone');
   const status = $('lotusAudioOutputStatus');
-  if (status.dataset.playing === 'true') return;
-  status.dataset.playing = 'true';
+  if (lotusToneAttempt) return;
+  if (document.hidden || lotusRecognition || lotusConversationRequest || lotusUtterance) {
+    status.textContent = 'Affichez la page et terminez la session en cours avant de tester le bip.';
+    return;
+  }
+  const attempt = {};
+  lotusToneAttempt = attempt;
   status.textContent = 'Lancement du bip…';
+  attempt.timer = setTimeout(() => {
+    if (lotusToneAttempt === attempt) {
+      stopLotusTestTone('Le navigateur n’a pas signalé le démarrage du bip. Vous pouvez réessayer.');
+    }
+  }, 5000);
   try {
     audio.currentTime = 0;
     await audio.play();
-    status.textContent = 'Safari indique que le bip a démarré. Avez-vous entendu le son ?';
+    if (lotusToneAttempt === attempt) {
+      status.textContent = 'Safari indique que le bip a démarré. Avez-vous entendu le son ?';
+    }
   } catch (error) {
-    status.textContent = 'Safari n’a pas pu jouer le bip' + (error?.name ? ' (' + error.name + ')' : '') + '.';
+    if (lotusToneAttempt === attempt) {
+      status.textContent = 'Safari n’a pas pu jouer le bip' + (error?.name ? ' (' + error.name + ')' : '') + '.';
+    }
   } finally {
-    delete status.dataset.playing;
+    if (lotusToneAttempt === attempt) {
+      clearTimeout(attempt.timer);
+      lotusToneAttempt = null;
+    }
   }
 }
 function testLotusSpeaker() {
@@ -318,10 +470,26 @@ function testLotusSpeaker() {
   }
   speakVoice('Bonjour, ici Lotus. Ceci est un test du son.');
 }
-function speakVoice(sample){
-  if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){voiceStatus('Lecture vocale indisponible sur ce navigateur.');return}
-  const text=sample ?? $('spokenText').value.trim();if(!text){voiceStatus('Saisissez ou dictez un texte à écouter.');return}
-  stopVoice('Préparation de la lecture…');stopSpeaking();
+function speakVoice(sample) {
+  if (document.hidden) {
+    voiceStatus('Affichez la page Lotus avant de lancer la lecture vocale.');
+    return;
+  }
+  if (!window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') {
+    voiceStatus('Lecture vocale indisponible sur ce navigateur.');
+    return;
+  }
+  const text = sample ?? $('spokenText').value.trim();
+  if (!text) {
+    voiceStatus('Saisissez ou dictez un texte à écouter.');
+    return;
+  }
+  stopLotusTestTone('Test du bip arrêté pour la lecture vocale.');
+  stopVoice('Préparation de la lecture…');
+  if (!stopSpeaking()) {
+    voiceStatus('Impossible de préparer la lecture vocale. Le navigateur n’a pas pu réinitialiser la synthèse.');
+    return;
+  }
   try {
     const utterance = new SpeechSynthesisUtterance(text);
     lotusUtterance = utterance;
@@ -336,10 +504,18 @@ function speakVoice(sample){
       utterance.rate = 0.88;
       utterance.pitch = 1.03;
     }
+    let started = false;
     utterance.onstart = () => {
-      if (lotusUtterance !== utterance) return;
+      if (lotusUtterance !== utterance || started) return;
+      started = true;
       clearTimeout(lotusSpeechTimer);
-      lotusSpeechTimer = null;
+      // Prévoir une marge pour les textes longs et les voix lentes.
+      const readingTimeout = Math.max(30000, text.length * 250);
+      lotusSpeechTimer = setTimeout(() => {
+        if (lotusUtterance !== utterance) return;
+        stopSpeaking();
+        voiceStatus('Le navigateur n’a pas signalé la fin de la lecture. Vous pouvez relancer le test.');
+      }, readingTimeout);
       voiceStatus('Le navigateur signale le début de la lecture.');
     };
     const finish = message => {
@@ -349,7 +525,9 @@ function speakVoice(sample){
       lotusUtterance = null;
       voiceStatus(message);
     };
-    utterance.onend = () => finish('Lecture terminée.');
+    utterance.onend = () => finish(started
+      ? 'Le navigateur signale la fin de la lecture.'
+      : 'Le navigateur a signalé la fin sans signaler le début de la lecture.');
     utterance.onerror = event => {
       const detail = event?.error ? ' (code : ' + event.error + ')' : '';
       finish('La lecture vocale a échoué' + detail + '. Vérifiez le son et les voix de votre appareil.');
